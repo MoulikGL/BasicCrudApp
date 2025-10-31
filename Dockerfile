@@ -1,19 +1,14 @@
-# Build stage
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
-
-# Copy solution and restore dependencies
 COPY BasicCrudApp.sln ./
 COPY BasicCrudApp/*.csproj ./BasicCrudApp/
 RUN dotnet restore
 
-# Copy all source and build
 COPY . .
 WORKDIR /src/BasicCrudApp
 RUN dotnet publish -c Release -o /app/publish
 
-# Runtime stage
-FROM mcr.microsoft.com/dotnet/aspnet:8.0
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS runtime
 WORKDIR /app
 COPY --from=build /app/publish .
 ENTRYPOINT ["dotnet", "BasicCrudApp.dll"]
